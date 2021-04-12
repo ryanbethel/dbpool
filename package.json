@@ -1,6 +1,6 @@
 {
   "name": "dbpool",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@architect/functions": "^3.13.10",
+    "ulid": "^2.3.0"
+  }
 }
