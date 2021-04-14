@@ -2,6 +2,10 @@
 
 Dpool is a pooling queue for using relational databases directly from serverless applications. The pool function uses a DynamoDB table as a queue to request and limit connections to the relational database. The pool adds a small amount of latency from the minimum write to and read from the DynamoDB table. If all connections are full the request will poll periodically and connect when available.
 
+## Warning
+
+This is an Alpha version and should not be relied on for production or critical operations. It is an experimental proof of concept. If configured improperly it could result in excessive DynamoDB operations.
+
 ## What's it good for
 
 It is intended to ease the on-ramp to serverless by allowing applications to use a traditionally hosted small instance of a relational database. For instance a free tier Heroku database limited to 20 connections. For these small applications and prototypes it is likely that the required DynamoDB usage will be low and possibly stay within the free tier.
