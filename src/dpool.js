@@ -53,6 +53,7 @@ async function dpool(
         waitVarianceMs,
         maxRetries,
         queryLimit,
+        poolTable,
     });
 
     let result = null;
@@ -71,9 +72,9 @@ async function dpool(
 
 async function waitUntilOnQueue(
     dynamo,
-    { lockId, nowMs, poolName, poolSize, minWaitQueueMs, waitVarianceMs, maxRetries }
+    { lockId, nowMs, poolName, poolSize, minWaitQueueMs, waitVarianceMs, maxRetries, poolTable }
 ) {
-    let maxTimeToQueue = await checkQueue(dynamo, { lockId, nowMs, poolName, poolSize });
+    let maxTimeToQueue = await checkQueue(dynamo, { lockId, nowMs, poolName, poolSize, poolTable });
     let retries = 0;
     while (maxTimeToQueue > Date.now()) {
         retries++;
@@ -83,11 +84,11 @@ async function waitUntilOnQueue(
                 Math.min(Math.max(maxTimeToQueue - Date.now(), 0), minWaitQueueMs + Math.random() * waitVarianceMs)
             )
         );
-        maxTimeToQueue = await checkQueue(dynamo, { lockId, nowMs, poolName, poolSize });
+        maxTimeToQueue = await checkQueue(dynamo, { lockId, nowMs, poolName, poolSize, poolTable });
     }
 }
 
-async function checkQueue(dynamo, { queryLimit, poolName, poolSize, nowMs, lockId }) {
+async function checkQueue(dynamo, { queryLimit, poolName, poolSize, nowMs, lockId, poolTable }) {
     let poolQuery = await dynamo[poolTable].query({
         ExpressionAttributeNames: { "#p": "pk" },
         KeyConditionExpression: "#p = :p ",
