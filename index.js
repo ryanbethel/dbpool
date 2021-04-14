@@ -1,2 +1,2 @@
-const dbpool = require("./src/dbpool.js");
-module.exports = { dbpool };
+const dbpool = require("./src/dpool.js");
+module.exports = { dpool };

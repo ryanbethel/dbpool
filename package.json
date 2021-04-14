@@ -1,13 +1,17 @@
 {
-  "name": "dbpool",
-  "version": "0.1.0",
-  "description": "",
+  "name": "dpool",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": "git://github.com/ryanbethel/dpool.git", 
+  "version": "0.1.1",
+  "description": "Serverless pooling function for relational databases, using a DynamoDB table as a queue",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ryan Bethel",
   "license": "ISC",
   "dependencies": {
     "@architect/functions": "^3.13.10",

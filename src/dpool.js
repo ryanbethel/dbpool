@@ -1,7 +1,7 @@
 let arc = require("@architect/functions");
 let { ulid } = require("ulid");
 
-async function requestDbLock(
+async function dpool(
     operation,
     cleanup,
     {
@@ -13,6 +13,7 @@ async function requestDbLock(
         waitVarianceMs = 20, //random variation in retry
         maxRetries = 50, //maximum number of retries before throwing
         queryLimit = 1000, //limit on queue query to avoid large queries
+        poolTable,
     }
 ) {
     if (bypass) {
@@ -27,7 +28,7 @@ async function requestDbLock(
     let ttl = nowSec + 60 * 60;
 
     // Grab a spot in line in the Pool
-    await dynamo.dbpool.put({ pk: poolName, sk: lockId, exp: nowMs + timeout, ttl });
+    await dynamo[poolTable].put({ pk: poolName, sk: lockId, exp: nowMs + timeout, ttl });
 
     //if db operations don't complete in max time window attempt to disconnect and remove lock from pool
     let didTimeout = false;
@@ -36,7 +37,7 @@ async function requestDbLock(
         .then(async () => {
             didTimeout = true;
             await cleanup();
-            await dynamo.dbpool.delete({ pk: poolName, sk: lockId });
+            await dynamo[poolTable].delete({ pk: poolName, sk: lockId });
         })
         .catch((e) => {
             if (e !== "silent") {
@@ -63,7 +64,7 @@ async function requestDbLock(
     if (didTimeout === false) {
         maxTimeout.cancel("silent");
         await cleanup();
-        await dynamo.dbpool.delete({ pk: poolName, sk: lockId });
+        await dynamo[poolTable].delete({ pk: poolName, sk: lockId });
     }
     return result;
 }
@@ -87,7 +88,7 @@ async function waitUntilOnQueue(
 }
 
 async function checkQueue(dynamo, { queryLimit, poolName, poolSize, nowMs, lockId }) {
-    let poolQuery = await dynamo.dbpool.query({
+    let poolQuery = await dynamo[poolTable].query({
         ExpressionAttributeNames: { "#p": "pk" },
         KeyConditionExpression: "#p = :p ",
         ExpressionAttributeValues: { ":p": poolName },
@@ -121,4 +122,4 @@ function wait(ms, value = null) {
     return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
-module.exports = { requestDbLock, wait };
+module.exports = { dpool, wait };
