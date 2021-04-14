@@ -1,8 +1,5 @@
 {
   "name": "dpool",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "repository": "git://github.com/ryanbethel/dpool.git", 
   "version": "0.1.1",
   "description": "Serverless pooling function for relational databases, using a DynamoDB table as a queue",
